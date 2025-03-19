@@ -78,8 +78,8 @@ public enum WeaponType
 
 public enum SoundType
 {
-    TimeOver,
     NextQuestion,
     eggSound,
+    puuu,
 
 }

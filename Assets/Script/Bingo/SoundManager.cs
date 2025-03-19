@@ -21,6 +21,10 @@ public class SoundManager : MonoBehaviour
         {
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.clip = sound;
+
+            if (type == SoundType.puuu)
+                audioSource.pitch = 0.9f;
+
             audioSource.Play();
             Destroy(audioSource, sound.length); // 소리가 끝나면 AudioSource를 제거
         }
