@@ -14,6 +14,7 @@ public class WeaponRoulettePanel : MonoBehaviour
     public GameObject rerollObject;
     public GameObject nextButton;
     public List<UIParticle> particles = new List<UIParticle>();
+    public List<Image> dotImages = new List<Image>();
 
 
     int count = -1;
@@ -22,8 +23,19 @@ public class WeaponRoulettePanel : MonoBehaviour
 
     void Start()
     {
-        numberText.text = $"No.0";
-        weaponText.text = $"무슨 무기가 나올까?";
+        numberText.text = $"";
+        weaponText.text = $"연모아 무기빙고";
+
+        foreach (var particle in particles)
+        {
+            particle.Stop();
+            particle.gameObject.SetActive(false);
+        }
+        foreach (var image in dotImages)
+        {
+            image.sprite = ResourceManager.Instance.GetRandomSprite();
+            image.gameObject.SetActive(false);
+        }
     }
 
     public void UpdateUI()
@@ -39,21 +51,33 @@ public class WeaponRoulettePanel : MonoBehaviour
             particle.gameObject.SetActive(false);
         }
         nextButton.SetActive(false);
+        foreach (var image in dotImages)
+        {
+            image.sprite = ResourceManager.Instance.GetRandomSprite();
+            image.gameObject.SetActive(false);
+        }
 
         numberText.text = "";
-        weaponText.text = ".";
+        weaponText.text = "";
+        // weaponText.text = ".";
+        dotImages[0].gameObject.SetActive(true);
         SoundManager.Instance.PlaySound(SoundType.eggSound);
         yield return new WaitForSeconds(0.5f);
 
-        weaponText.text = ". .";
+        // weaponText.text = ". .";
+        dotImages[1].gameObject.SetActive(true);
         SoundManager.Instance.PlaySound(SoundType.eggSound);
         yield return new WaitForSeconds(0.5f);
 
-        weaponText.text = ". . .";
+        // weaponText.text = ". . .";
+        dotImages[2].gameObject.SetActive(true);
         SoundManager.Instance.PlaySound(SoundType.eggSound);
         yield return new WaitForSeconds(0.5f);
 
         SoundManager.Instance.PlaySound(SoundType.puuu);
+        foreach (var image in dotImages)
+            image.gameObject.SetActive(false);
+
         numberText.text = $"No.{count + 1}";
         numberText.transform.DOScale(1f, 0.4f).From(1.5f).SetEase(Ease.InOutBack);
 

@@ -69,5 +69,14 @@ public class UIManager : MonoBehaviour
         weaponRoulettePanel.SetActive(true);
     }
 
+    public void SetModeSelect()
+    {
+        boardPanel.SetActive(true);
+        weaponButtonPanel.SetActive(false);
+        weaponListPanel.SetActive(false);
+        modeSelectPanel.SetActive(true);
+        weaponRoulettePanel.SetActive(false);
+    }
+
 
 }

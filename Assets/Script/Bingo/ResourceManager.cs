@@ -30,5 +30,11 @@ public class ResourceManager : MonoBehaviour
         return null;
     }
 
+    public Sprite GetRandomSprite()
+    {
+        int index = Random.Range(0, ImageResources.Count);
+        return ImageResources[index];
+    }
+
 
 }
