@@ -7,7 +7,15 @@ using UnityEngine.UI;
 
 public class WeaponRoulettePanel : MonoBehaviour
 {
+    public GameObject bingoGameUIRoot;
+    public GameObject bingoCompleteUIRoot;
 
+
+    //Bingo Complete
+    public Text completeText;
+
+
+    //Bingo Game
     public Text numberText;
     public Text weaponText;
     public Text rerollText;
@@ -23,6 +31,9 @@ public class WeaponRoulettePanel : MonoBehaviour
 
     void Start()
     {
+        bingoGameUIRoot.SetActive(true);
+        bingoCompleteUIRoot.SetActive(false);
+
         numberText.text = $"";
         weaponText.text = $"연모아 무기빙고";
 
@@ -121,5 +132,16 @@ public class WeaponRoulettePanel : MonoBehaviour
     {
         InGame.instance.ShuffleWeapon();
         rerollText.text = InGame.instance.GetRouletteCount().ToString();
+    }
+
+    public void OnClickBingoComplete()
+    {
+        bingoGameUIRoot.SetActive(false);
+        bingoCompleteUIRoot.SetActive(true);
+
+        SoundManager.Instance.PlaySound(SoundType.fanfare2);
+        completeText.text = "빙고 완성!\n축하드립니다!";
+
+        DOVirtual.DelayedCall(2f, () => SoundManager.Instance.PlaySound(SoundType.fanfare1));
     }
 }

@@ -81,5 +81,7 @@ public enum SoundType
     NextQuestion,
     eggSound,
     puuu,
+    fanfare1,
+    fanfare2,
 
 }
