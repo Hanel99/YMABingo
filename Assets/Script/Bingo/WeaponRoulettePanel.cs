@@ -54,6 +54,7 @@ public class WeaponRoulettePanel : MonoBehaviour
         foreach (var image in dotImages)
         {
             image.sprite = ResourceManager.Instance.GetRandomSprite();
+            image.SetNativeSize();
             image.gameObject.SetActive(false);
         }
 
