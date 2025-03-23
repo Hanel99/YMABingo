@@ -13,9 +13,11 @@ public class WeaponRoulettePanel : MonoBehaviour
 
     //Bingo Complete
     public Text completeText;
+    public GameObject completeBubble;
 
 
     //Bingo Game
+    public GameObject startBubble;
     public Text numberText;
     public Text weaponText;
     public Text rerollText;
@@ -31,6 +33,8 @@ public class WeaponRoulettePanel : MonoBehaviour
 
     void Start()
     {
+        startBubble.SetActive(true);
+        completeBubble.SetActive(false);
         bingoGameUIRoot.SetActive(true);
         bingoCompleteUIRoot.SetActive(false);
 
@@ -62,6 +66,7 @@ public class WeaponRoulettePanel : MonoBehaviour
             particle.gameObject.SetActive(false);
         }
         nextButton.SetActive(false);
+        startBubble.SetActive(false);
         foreach (var image in dotImages)
         {
             image.sprite = ResourceManager.Instance.GetRandomSprite();
@@ -138,6 +143,7 @@ public class WeaponRoulettePanel : MonoBehaviour
     {
         bingoGameUIRoot.SetActive(false);
         bingoCompleteUIRoot.SetActive(true);
+        completeBubble.SetActive(true);
 
         SoundManager.Instance.PlaySound(SoundType.fanfare2);
         completeText.text = "빙고 완성!\n축하드립니다!";
