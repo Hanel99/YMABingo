@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.IO;
 using System.Collections;
+using UnityEngine.Networking;
 
 
 public class InGame : MonoBehaviour
@@ -134,10 +135,19 @@ public class InGame : MonoBehaviour
     IEnumerator Co_ReadCSV(string filePath)
     {
         string result = "";
-        using (WWW www = new WWW(filePath))
+        using (UnityWebRequest www = UnityWebRequest.Get(filePath))
         {
-            yield return www;
-            result = www.text;
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                result = www.downloadHandler.text;
+            }
+            else
+            {
+                Debug.LogError($"Failed to load CSV file: {www.error}");
+                yield break;
+            }
         }
 
         ParseCSV(result);

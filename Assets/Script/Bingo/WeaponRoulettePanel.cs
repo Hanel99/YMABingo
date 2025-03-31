@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Coffee.UIExtensions;
 using DG.Tweening;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class WeaponRoulettePanel : MonoBehaviour
     public GameObject startBubble;
     public Text numberText;
     public Text weaponText;
+    public Text weaponHistoryText;
     public Text rerollText;
     public GameObject rerollObject;
     public GameObject nextButton;
@@ -29,6 +31,7 @@ public class WeaponRoulettePanel : MonoBehaviour
 
     int count = -1;
     bool isAnimation = false;
+    StringBuilder weaponHistorySb = new StringBuilder();
 
 
     void Start()
@@ -40,6 +43,8 @@ public class WeaponRoulettePanel : MonoBehaviour
 
         numberText.text = $"";
         weaponText.text = $"연모아 무기빙고";
+        weaponHistoryText.text = $"";
+        weaponHistorySb.Clear();
 
         foreach (var particle in particles)
         {
@@ -76,17 +81,16 @@ public class WeaponRoulettePanel : MonoBehaviour
 
         numberText.text = "";
         weaponText.text = "";
-        // weaponText.text = ".";
+        weaponHistoryText.gameObject.SetActive(false);
+
         dotImages[0].gameObject.SetActive(true);
         SoundManager.Instance.PlaySound(SoundType.eggSound);
         yield return new WaitForSeconds(0.5f);
 
-        // weaponText.text = ". .";
         dotImages[1].gameObject.SetActive(true);
         SoundManager.Instance.PlaySound(SoundType.eggSound);
         yield return new WaitForSeconds(0.5f);
 
-        // weaponText.text = ". . .";
         dotImages[2].gameObject.SetActive(true);
         SoundManager.Instance.PlaySound(SoundType.eggSound);
         yield return new WaitForSeconds(0.5f);
@@ -100,6 +104,10 @@ public class WeaponRoulettePanel : MonoBehaviour
 
         weaponText.text = ConvertExtension.ConvertWeaponTypeToName(InGame.instance.GetWeaponTypes(count));
         weaponText.transform.DOScale(1f, 0.7f).From(0.5f).SetEase(Ease.OutBack);
+
+        weaponHistorySb.AppendLine($"{count + 1}. {weaponText.text}");
+        weaponHistoryText.text = weaponHistorySb.ToString();
+        weaponHistoryText.gameObject.SetActive(true);
 
         foreach (var particle in particles)
         {
