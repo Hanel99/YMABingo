@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.IO;
+using System.Collections;
 
 
 public class InGame : MonoBehaviour
@@ -12,11 +14,16 @@ public class InGame : MonoBehaviour
     public List<BingoBoard> bingoBoards = new List<BingoBoard>();
 
 
+    // 무기타입을 순서대로 저장. 해당 무기가 켜졌는지 꺼졌는지 확인용
     Dictionary<WeaponType, bool> weaponSelectDic = new Dictionary<WeaponType, bool>();
     public bool GetWeaponSelectDic(WeaponType type) => weaponSelectDic[type];
+
+    // 노출할 무기타입을 순서대로 저장. 0번부터 순서대로 무기를 표시
     List<WeaponType> weaponTypeList = new List<WeaponType>();
     public List<WeaponType> GetWeaponTypes() => weaponTypeList;
     public WeaponType GetWeaponTypes(int index) => weaponTypeList[index];
+
+    // 셔플을 돌린 횟수
     int rouletteCount = 0;
     public int GetRouletteCount() => rouletteCount;
 
@@ -35,7 +42,8 @@ public class InGame : MonoBehaviour
 
     void Start()
     {
-        LoadBingoData();
+        // LoadBingoData();
+        LoadData();
         Application.targetFrameRate = 60;
 
 
@@ -95,8 +103,12 @@ public class InGame : MonoBehaviour
 
 
 
+    // Resources.Load 방식
     public void LoadBingoData()
     {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "data.csv");
+
+
         TextAsset ta = Resources.Load<TextAsset>("CSV/BingoData");
         if (ta)
         {
@@ -104,4 +116,45 @@ public class InGame : MonoBehaviour
             bingoData = BingoMetaData.Create(csv);
         }
     }
+
+
+
+    //StreamingAsset 방식
+    public void LoadData()
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "BingoData.csv");
+
+        // Android, WebGL 같은 환경에서 파일을 읽을 때 WWW 사용
+        if (filePath.Contains("://") || filePath.Contains(":///"))
+            StartCoroutine(Co_ReadCSV(filePath));
+        else
+            ReadCSV(filePath);
+    }
+
+    IEnumerator Co_ReadCSV(string filePath)
+    {
+        string result = "";
+        using (WWW www = new WWW(filePath))
+        {
+            yield return www;
+            result = www.text;
+        }
+
+        ParseCSV(result);
+    }
+
+    void ReadCSV(string filePath)
+    {
+        string result = File.ReadAllText(filePath);
+        ParseCSV(result);
+    }
+
+
+    void ParseCSV(string csvText)
+    {
+        List<Dictionary<string, object>> csv = CSVReader.Read(csvText);
+        bingoData = BingoMetaData.Create(csv);
+    }
+
+
 }
