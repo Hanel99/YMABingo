@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 using System.IO;
 using System.Collections;
@@ -12,7 +11,8 @@ public class InGame : MonoBehaviour
 
 
     List<BingoMetaData> bingoData = new List<BingoMetaData>();
-    public List<BingoBoard> bingoBoards = new List<BingoBoard>();
+    public GameObject bingoBoardPrefab;
+    List<BingoBoard> bingoBoards = new List<BingoBoard>();
 
 
     // 무기타입을 순서대로 저장. 해당 무기가 켜졌는지 꺼졌는지 확인용
@@ -47,6 +47,19 @@ public class InGame : MonoBehaviour
         LoadData();
         Application.targetFrameRate = 60;
 
+        SetBingoBoardUI();
+        ShuffleWeapon();
+    }
+
+
+    public void SetBingoBoardUI()
+    {
+        for (int i = 0; i < bingoData.Count; i++)
+        {
+            var go = Instantiate(bingoBoardPrefab, bingoBoardPrefab.transform.parent);
+            bingoBoards.Add(go.GetComponent<BingoBoard>());
+        }
+        bingoBoardPrefab.SetActive(false);
 
         for (int i = 0; i < bingoBoards.Count; i++)
         {
@@ -59,10 +72,6 @@ public class InGame : MonoBehaviour
             weaponSelectDic.Add(type, false);
             weaponTypeList.Add(type);
         }
-
-        ShuffleWeapon();
-
-        UpdateBoardKanIndexText();
     }
 
 
