@@ -5,8 +5,18 @@ using UnityEngine.UI;
 
 public class ModeSelectPanel : MonoBehaviour
 {
-
+    public static ModeSelectPanel instance;
     public List<Image> hanelImageList = new List<Image>();
+    public Text serverUpdateResultText;
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+    }
+
 
     void Start()
     {
@@ -29,5 +39,17 @@ public class ModeSelectPanel : MonoBehaviour
     public void OnClickRouletteMode()
     {
         UIManager.Instance.SetRouletteMode();
+    }
+
+    public void OnClickServerButton()
+    {
+        InGame.instance.UpdateBingoDataFromSheetData();
+    }
+
+    public void SetServerUpdateResultText(string text)
+    {
+        serverUpdateResultText.text = text;
+        DOVirtual.DelayedCall(3f, () => { serverUpdateResultText.text = ""; });
+
     }
 }

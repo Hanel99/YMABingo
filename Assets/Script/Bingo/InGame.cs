@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Collections;
 using UnityEngine.Networking;
+using System.Text.RegularExpressions;
+using System.Linq;
+using System;
+
 
 
 public class InGame : MonoBehaviour
@@ -38,14 +42,18 @@ public class InGame : MonoBehaviour
         {
             instance = this;
         }
+
+        // LoadBingoData();
+        LoadData();
+        Application.targetFrameRate = 60;
     }
 
 
     void Start()
     {
         // LoadBingoData();
-        LoadData();
-        Application.targetFrameRate = 60;
+        // LoadData();
+        // Application.targetFrameRate = 60;
 
         SetBingoBoardUI();
         ShuffleWeapon();
@@ -56,17 +64,34 @@ public class InGame : MonoBehaviour
     {
         for (int i = 0; i < bingoData.Count; i++)
         {
-            var go = Instantiate(bingoBoardPrefab, bingoBoardPrefab.transform.parent);
-            bingoBoards.Add(go.GetComponent<BingoBoard>());
+            if (bingoBoards.Count < bingoData.Count)
+            {
+                var go = Instantiate(bingoBoardPrefab, bingoBoardPrefab.transform.parent);
+                bingoBoards.Add(go.GetComponent<BingoBoard>());
+                go.SetActive(true);
+            }
         }
         bingoBoardPrefab.SetActive(false);
 
+
+        // for (int i = 0; i < bingoBoards.Count; i++)
+        //     Destroy(bingoBoards[i]);
+        // bingoBoards.Clear();
+
         for (int i = 0; i < bingoBoards.Count; i++)
         {
-            bingoBoards[i].SetBingoData(bingoData[index]);
-            index++;
+            if (i < bingoData.Count)
+            {
+                bingoBoards[i].SetBingoData(bingoData[i]);
+            }
+            else
+            {
+                bingoBoards[i].gameObject.SetActive(false);
+            }
         }
 
+        weaponSelectDic.Clear();
+        weaponTypeList.Clear();
         for (WeaponType type = WeaponType.SH1; type < WeaponType.Count; type++)
         {
             weaponSelectDic.Add(type, false);
@@ -171,9 +196,51 @@ public class InGame : MonoBehaviour
 
     void ParseCSV(string csvText)
     {
+        HLLogger.Log(csvText);
+
         List<Dictionary<string, object>> csv = CSVReader.Read(csvText);
         bingoData = BingoMetaData.Create(csv);
     }
 
 
+
+    private string sheetURL = "https://docs.google.com/spreadsheets/d/14c8e0u-_xwVo9sPLZqBPdYlJvGMqWiCH/export?format=csv&range=A1:AA46";
+
+    bool isUpdateNow = false;
+
+    public void UpdateBingoDataFromSheetData()
+    {
+        if (isUpdateNow) return;
+
+        isUpdateNow = true;
+        StartCoroutine(GoogleSheetProcess(() =>
+        {
+            ModeSelectPanel.instance.SetServerUpdateResultText("Complete");
+            SetBingoBoardUI();
+            isUpdateNow = false;
+        }));
+    }
+
+    IEnumerator GoogleSheetProcess(Action completeCallback)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Get(sheetURL))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.isDone)
+            {
+                var sheetData = www.downloadHandler.text;
+                HLLogger.Log($"FInish\nurl : {sheetURL}\ndate : {sheetData}");
+
+                UpdateRandomValueFromServer(sheetData);
+                completeCallback?.Invoke();
+            }
+        }
+    }
+
+    void UpdateRandomValueFromServer(string sheetData)
+    {
+        HLLogger.Log(sheetData);
+        ParseCSV(sheetData);
+    }
 }

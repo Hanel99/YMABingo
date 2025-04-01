@@ -77,6 +77,4 @@ public class UIManager : MonoBehaviour
         modeSelectPanel.SetActive(true);
         weaponRoulettePanel.SetActive(false);
     }
-
-
 }

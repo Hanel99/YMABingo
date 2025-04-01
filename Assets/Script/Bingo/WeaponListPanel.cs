@@ -67,6 +67,7 @@ public class WeaponListPanel : MonoBehaviour
 
     void OnEnable()
     {
+        UpdateWeaponData();
         foreach (var weaponData in weaponDataList)
             weaponData.weaponButton.UpdateButtonColor(InGame.instance.GetWeaponSelectDic(weaponData.weaponButton.weaponType));
 

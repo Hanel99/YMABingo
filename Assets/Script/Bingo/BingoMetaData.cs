@@ -49,6 +49,11 @@ public class BingoMetaData
         {
             index = 0;
             List<object> values = new List<object>(csv[i].Values);
+
+            //이름 값이 빈칸이면 스킵
+            if (string.IsNullOrEmpty(values[1].ToString()))
+                continue;
+
             list.Add(new BingoMetaData
             {
                 No = values[index++].ToInt(),
