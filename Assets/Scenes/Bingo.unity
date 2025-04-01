@@ -252,7 +252,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -19307,7 +19307,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\uC11C\uBC84 \uB370\uC774\uD130 \uC801\uC6A9"
+  m_Text: "\uC2DC\uD2B8 \uB370\uC774\uD130 \uC801\uC6A9"
 --- !u!222 &1590855250
 CanvasRenderer:
   m_ObjectHideFlags: 0

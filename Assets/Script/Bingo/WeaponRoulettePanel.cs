@@ -32,6 +32,7 @@ public class WeaponRoulettePanel : MonoBehaviour
     int count = -1;
     bool isAnimation = false;
     StringBuilder weaponHistorySb = new StringBuilder();
+    Vector3 weaponHistoryTextTransform;
 
 
     void Start()
@@ -45,6 +46,8 @@ public class WeaponRoulettePanel : MonoBehaviour
         weaponText.text = $"연모아 무기빙고";
         weaponHistoryText.text = $"";
         weaponHistorySb.Clear();
+
+        weaponHistoryTextTransform = weaponHistoryText.transform.localPosition;
 
         foreach (var particle in particles)
         {
@@ -108,6 +111,7 @@ public class WeaponRoulettePanel : MonoBehaviour
         weaponHistorySb.AppendLine($"{count + 1}. {weaponText.text}");
         weaponHistoryText.text = weaponHistorySb.ToString();
         weaponHistoryText.gameObject.SetActive(true);
+        weaponHistoryText.transform.DOLocalMoveY(0, 1f).SetEase(Ease.OutQuad).From(-100f);
 
         foreach (var particle in particles)
         {

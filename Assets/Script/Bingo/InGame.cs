@@ -65,7 +65,7 @@ public class InGame : MonoBehaviour
     {
         for (int i = 0; i < bingoData.Count; i++)
         {
-            if (bingoBoards.Count < bingoData.Count)
+            if (bingoBoards.Count <= i)
             {
                 var go = Instantiate(bingoBoardPrefab, bingoBoardPrefab.transform.parent);
                 bingoBoards.Add(go.GetComponent<BingoBoard>());
