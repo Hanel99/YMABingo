@@ -45,6 +45,7 @@ public class InGame : MonoBehaviour
 
         // LoadBingoData();
         LoadData();
+        SetBingoBoardUI();
         Application.targetFrameRate = 60;
     }
 
@@ -97,6 +98,10 @@ public class InGame : MonoBehaviour
             weaponSelectDic.Add(type, false);
             weaponTypeList.Add(type);
         }
+
+        UpdateBoardKanIndexText();
+        if (WeaponListPanel.instance != null)
+            WeaponListPanel.instance.UpdateWeaponData();
     }
 
 
@@ -196,8 +201,6 @@ public class InGame : MonoBehaviour
 
     void ParseCSV(string csvText)
     {
-        HLLogger.Log(csvText);
-
         List<Dictionary<string, object>> csv = CSVReader.Read(csvText);
         bingoData = BingoMetaData.Create(csv);
     }
@@ -213,9 +216,11 @@ public class InGame : MonoBehaviour
         if (isUpdateNow) return;
 
         isUpdateNow = true;
+        ModeSelectPanel.instance.SetServerUpdateResultText("업데이트중...");
+
         StartCoroutine(GoogleSheetProcess(() =>
         {
-            ModeSelectPanel.instance.SetServerUpdateResultText("Complete");
+            ModeSelectPanel.instance.SetServerUpdateResultText("업데이트 성공!");
             SetBingoBoardUI();
             isUpdateNow = false;
         }));
@@ -240,7 +245,6 @@ public class InGame : MonoBehaviour
 
     void UpdateRandomValueFromServer(string sheetData)
     {
-        HLLogger.Log(sheetData);
         ParseCSV(sheetData);
     }
 }
