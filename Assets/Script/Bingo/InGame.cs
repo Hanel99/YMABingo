@@ -43,8 +43,7 @@ public class InGame : MonoBehaviour
             instance = this;
         }
 
-        // LoadBingoData();
-        LoadData();
+        InitLoadCSVData();
         SetBingoBoardUI();
         Application.targetFrameRate = 60;
     }
@@ -52,10 +51,6 @@ public class InGame : MonoBehaviour
 
     void Start()
     {
-        // LoadBingoData();
-        // LoadData();
-        // Application.targetFrameRate = 60;
-
         SetBingoBoardUI();
         ShuffleWeapon();
     }
@@ -73,11 +68,6 @@ public class InGame : MonoBehaviour
             }
         }
         bingoBoardPrefab.SetActive(false);
-
-
-        // for (int i = 0; i < bingoBoards.Count; i++)
-        //     Destroy(bingoBoards[i]);
-        // bingoBoards.Clear();
 
         for (int i = 0; i < bingoBoards.Count; i++)
         {
@@ -142,109 +132,22 @@ public class InGame : MonoBehaviour
 
 
 
-
-    // Resources.Load 방식
-    public void LoadBingoData()
+    public void InitLoadCSVData()
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "data.csv");
-
-
-        TextAsset ta = Resources.Load<TextAsset>("CSV/BingoData");
-        if (ta)
+        LoadCSVDataManager.Instance.LoadDataFromStreamingAsset("BingoData", (data) =>
         {
-            List<Dictionary<string, object>> csv = CSVReader.Read(ta);
+            List<Dictionary<string, object>> csv = CSVReader.Read(data);
             bingoData = BingoMetaData.Create(csv);
-        }
+        });
     }
 
-
-
-    //StreamingAsset 방식
-    public void LoadData()
-    {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "BingoData.csv");
-
-        // Android, WebGL 같은 환경에서 파일을 읽을 때 WWW 사용
-        if (filePath.Contains("://") || filePath.Contains(":///"))
-            StartCoroutine(Co_ReadCSV(filePath));
-        else
-            ReadCSV(filePath);
-    }
-
-    IEnumerator Co_ReadCSV(string filePath)
-    {
-        string result = "";
-        using (UnityWebRequest www = UnityWebRequest.Get(filePath))
-        {
-            yield return www.SendWebRequest();
-
-            if (www.result == UnityWebRequest.Result.Success)
-            {
-                result = www.downloadHandler.text;
-            }
-            else
-            {
-                Debug.LogError($"Failed to load CSV file: {www.error}");
-                yield break;
-            }
-        }
-
-        ParseCSV(result);
-    }
-
-    void ReadCSV(string filePath)
-    {
-        string result = File.ReadAllText(filePath);
-        ParseCSV(result);
-    }
-
-
-    void ParseCSV(string csvText)
-    {
-        List<Dictionary<string, object>> csv = CSVReader.Read(csvText);
-        bingoData = BingoMetaData.Create(csv);
-    }
-
-
-
-    private string sheetURL = "https://docs.google.com/spreadsheets/d/14c8e0u-_xwVo9sPLZqBPdYlJvGMqWiCH/export?format=csv&range=A1:AA46";
-
-    bool isUpdateNow = false;
 
     public void UpdateBingoDataFromSheetData()
     {
-        if (isUpdateNow) return;
-
-        isUpdateNow = true;
-        ModeSelectPanel.instance.SetServerUpdateResultText("업데이트중...");
-
-        StartCoroutine(GoogleSheetProcess(() =>
+        LoadCSVDataManager.Instance.LoadDataFromGoogleSheet((data) =>
         {
             ModeSelectPanel.instance.SetServerUpdateResultText("업데이트 성공!");
             SetBingoBoardUI();
-            isUpdateNow = false;
-        }));
-    }
-
-    IEnumerator GoogleSheetProcess(Action completeCallback)
-    {
-        using (UnityWebRequest www = UnityWebRequest.Get(sheetURL))
-        {
-            yield return www.SendWebRequest();
-
-            if (www.isDone)
-            {
-                var sheetData = www.downloadHandler.text;
-                HLLogger.Log($"FInish\nurl : {sheetURL}\ndate : {sheetData}");
-
-                UpdateRandomValueFromServer(sheetData);
-                completeCallback?.Invoke();
-            }
-        }
-    }
-
-    void UpdateRandomValueFromServer(string sheetData)
-    {
-        ParseCSV(sheetData);
+        });
     }
 }
